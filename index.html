@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life-Asset Optimizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #1a202c; color: #e2e8f0; font-family: sans-serif; }
+        .card { background: #2d3748; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .score-glow { text-shadow: 0 0 15px #4fd1c5; }
+    </style>
+</head>
+<body class="p-4 max-w-md mx-auto">
+
+    <!-- 1. 感情の導入：執事の挨拶 -->
+    <header class="mb-8 mt-6">
+        <h1 id="greeting" class="text-2xl font-bold text-teal-400 mb-2">...</h1>
+        <p id="sub-message" class="text-sm text-gray-400 italic">ロード中...</p>
+    </header>
+
+    <!-- 2. 健康スコア：メインダッシュボード -->
+    <div class="card mb-6 text-center">
+        <h2 class="text-xs uppercase tracking-widest text-gray-500 mb-1">健康資産スコア</h2>
+        <div id="health-score" class="text-6xl font-bold text-teal-300 score-glow">85</div>
+        <p class="mt-2 text-sm">「守り」の状態：<span id="defense-status" class="text-green-400">強固</span></p>
+    </div>
+
+    <!-- 3. 入力：擬似自動分類（レシート撮影の代わりにテキスト入力） -->
+    <div class="card mb-6">
+        <h3 class="text-sm mb-3">今日の投資（購入品）</h3>
+        <input type="text" id="item-input" placeholder="例：鶏胸肉 ブロッコリー" class="w-full p-3 bg-gray-800 border border-gray-700 rounded mb-3 text-white">
+        <button onclick="analyzeItem()" class="w-full bg-teal-600 hover:bg-teal-500 p-3 rounded font-bold transition">解析して保存</button>
+    </div>
+
+    <script>
+        // 執事のメッセージパターン
+        const greetings = ["やあ、いらっしゃい。", "おかえりなさい。", "お疲れ様。待っていたよ。"];
+        const subMessages = ["今日も君の戦いを見ていたよ。", "まずは深呼吸して、自分を労おう。", "ここが君のシェルターだ。"];
+
+        window.onload = () => {
+            document.getElementById('greeting').innerText = greetings[Math.floor(Math.random() * greetings.length)];
+            document.getElementById('sub-message').innerText = subMessages[Math.floor(Math.random() * subMessages.length)];
+        };
+
+        // 簡易的な「自動分類＆健康スコア」ロジック
+        function analyzeItem() {
+            const input = document.getElementById('item-input').value;
+            if(!input) return;
+
+            // 管理栄養士的・簡易キーワード判定
+            const healthyKeywords = ["鶏", "肉", "野菜", "魚", "卵", "ブロッコリー", "納豆"];
+            const debtKeywords = ["酒", "菓子", "パン", "揚げ物", "ラーメン"];
+
+            let feedback = "";
+            if (healthyKeywords.some(k => input.includes(k))) {
+                feedback = "驚きました。期待以上の成果です。身体資本への見事な増資ですね！";
+            } else if (debtKeywords.some(k => input.includes(k))) {
+                feedback = "今は回復が必要な時期だね。この支出は『緊急メンテナンス』として処理しておこう。";
+            } else {
+                feedback = "なるほど、それも今の君には必要なピースかもしれないね。";
+            }
+
+            alert(feedback); // 本来はオシャレなモーダルやメッセージエリアへ
+            document.getElementById('item-input').value = "";
+        }
+    </script>
+</body>
+</html>
