@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life-Asset Optimizer v11</title>
+    <title>Life-Asset Optimizer v12</title>
     <style>
         :root { --teal: #4fd1c5; --bg: #1a202c; --card: #2d3748; --gold: #f6e05e; --blue: #63b3ed; }
         body { background: var(--bg); color: #e2e8f0; font-family: sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -13,37 +13,45 @@
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
         .stat-val { font-size: 1.2rem; font-weight: bold; }
         .investment-card { border: 1px solid var(--gold); background: rgba(246, 224, 94, 0.05); text-align: center; }
-        .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .check-item { background: #1a202c; padding: 8px 4px; border-radius: 8px; font-size: 0.62rem; cursor: pointer; border: 1px solid #4a5568; text-align: center; position: relative; line-height: 1.2; }
-        .check-item.active { border-color: var(--teal); background: rgba(79, 209, 197, 0.1); }
-        .count-badge { position: absolute; top: -5px; right: -5px; background: var(--teal); color: #1a202c; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; z-index: 10; }
-        .cat-label { grid-column: span 2; font-size: 0.6rem; font-weight: bold; margin-top: 6px; border-bottom: 1px solid #4a5568; padding-bottom: 2px; color: #a0aec0; }
-        button.primary { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--teal); color: #1a202c; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-        .nav-link { color: #718096; font-size: 0.6rem; text-decoration: underline; background: none; border: none; cursor: pointer; padding: 4px; }
-        input { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #4a5568; background: #1a202c; color: #fff; box-sizing: border-box; }
+        
+        /* リスト構造の刷新 */
+        .checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .cat-label { font-size: 0.65rem; font-weight: bold; margin-top: 10px; border-left: 3px solid var(--teal); padding-left: 8px; color: #a0aec0; }
+        .item-row { display: flex; align-items: center; justify-content: space-between; background: #1a202c; padding: 8px 12px; border-radius: 10px; border: 1px solid #4a5568; }
+        .item-info { flex: 1; font-size: 0.75rem; }
+        .controls { display: flex; align-items: center; gap: 12px; }
+        .btn-minus, .btn-plus { width: 28px; height: 28px; border-radius: 50%; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        .btn-minus { background: #4a5568; color: white; }
+        .btn-plus { background: var(--teal); color: #1a202c; }
+        .count-num { font-size: 0.9rem; font-weight: bold; width: 15px; text-align: center; }
+        
+        button.primary { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--teal); color: #1a202c; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .nav-link { color: #718096; font-size: 0.65rem; text-decoration: underline; background: none; border: none; cursor: pointer; padding: 5px; }
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
+    <!-- A: 初期設定（変更なし） -->
     <div id="setup-screen" class="container hidden">
         <div class="card">
             <h2 style="color: var(--teal); margin-top: 0; font-size: 1.2rem;">やあ、いらっしゃい。</h2>
             <p style="font-size: 0.75rem; color: #a0aec0; margin-bottom: 15px;">初期条件を教えてくれるかな？</p>
-            <label style="font-size:0.6rem;">全貯蓄（万円）</label><input type="number" id="init-savings" value="100">
-            <label style="font-size:0.6rem;">月間食費予算（円）</label><input type="number" id="init-food-budget" value="45000">
-            <label style="font-size:0.6rem;">固定費（万円/月）</label><input type="number" id="init-fixed-cost" value="12">
+            <label style="font-size:0.6rem;">全貯蓄（万円）</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-savings" value="100">
+            <label style="font-size:0.6rem;">月間食費予算（円）</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-food-budget" value="45000">
+            <label style="font-size:0.6rem;">固定費（万円/月）</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-fixed-cost" value="12">
             <button class="primary" onclick="saveSetup()">資産運用を開始</button>
         </div>
     </div>
 
+    <!-- B: メイン画面 -->
     <div id="main-screen" class="container hidden">
         <header style="margin-bottom: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center;">
-            <div id="greeting" style="font-size: 1rem; font-weight: bold; color: var(--teal);">やあ、お疲れ様。</div>
+            <div id="greeting" style="font-size: 1.1rem; font-weight: bold; color: var(--teal);">やあ、お疲れ様。</div>
             <button onclick="openManual()" class="nav-link">使い方・免責</button>
         </header>
 
-        <div class="card stat-grid" style="padding: 0.8rem;">
+        <div class="card stat-grid">
             <div><div style="font-size: 0.5rem; color: #718096; margin-bottom: 2px;">健康</div><div id="health-score" class="stat-val" style="color:var(--teal);">--</div></div>
             <div><div style="font-size: 0.5rem; color: #718096; margin-bottom: 2px;">食費残</div><div id="food-budget-val" class="stat-val" style="color:var(--gold);">--</div></div>
             <div><div style="font-size: 0.5rem; color: #718096; margin-bottom: 2px;">生存日数</div><div id="survival-days" class="stat-val" style="color:var(--blue);">--</div></div>
@@ -55,56 +63,88 @@
         </div>
 
         <div class="card">
-            <div class="checklist">
-                <div class="cat-label" style="color:var(--teal);">🌾 主食（ベース）</div>
-                <div class="check-item" onclick="countItem(this, 100, 3)">🍚 自炊米・パスタ</div>
-                <div class="check-item" onclick="countItem(this, 180, 1)">🍙 おにぎり(コンビニ)</div>
-                <div class="check-item" onclick="countItem(this, 150, 1)">🍞 食パン</div>
-                <div class="check-item" onclick="countItem(this, 200, -3)">🥯 総菜・菓子パン</div>
-
-                <div class="cat-label" style="color:var(--gold);">🥩 おかず（自炊：身体資本）</div>
-                <div class="check-item" onclick="countItem(this, 200, 6)">🍳 卵・納豆・豆腐</div>
-                <div class="check-item" onclick="countItem(this, 300, 5)">🌿 季節の野菜</div>
-                <div class="check-item" onclick="countItem(this, 600, 7)">🥩 肉料理(自炊)</div>
-                <div class="check-item" onclick="countItem(this, 700, 8)">🐟 魚料理(自炊)</div>
-                <div class="check-item" onclick="countItem(this, 200, 4)">🥛 乳製品・ナッツ</div>
-                <div class="check-item" onclick="countItem(this, 300, 4)">🥗 カット野菜・鶏胸</div>
-
-                <div class="cat-label" style="color:var(--blue);">🏢 外部調達（利便性とコスト）</div>
-                <div class="check-item" onclick="countItem(this, 800, -2)">🍱 コンビニ弁当</div>
-                <div class="check-item" onclick="countItem(this, 900, -4)">🍜 ラーメン・丼物</div>
-                <div class="check-item" onclick="countItem(this, 1500, 2)">🍽 外食レストラン</div>
-                <div class="check-item" onclick="countItem(this, 500, -5)">🍺 お酒・スナック</div>
+            <div class="checklist" id="item-list">
+                <!-- JavaScriptで動的に生成されます -->
             </div>
             <button class="primary" onclick="commitInvestment()">ログを確定する</button>
-            <div id="log-display" style="border-left: 3px solid var(--teal); padding-left: 8px; font-size: 0.7rem; margin-top: 10px; min-height: 30px; color: #cbd5e0;"></div>
+            <div id="log-display" style="border-left: 3px solid var(--teal); padding-left: 10px; font-size: 0.75rem; margin-top: 10px; min-height: 30px; color: #cbd5e0;"></div>
         </div>
-        <button onclick="resetSystem()" class="nav-link" style="width:100%;">全データをリセット</button>
+        
+        <button onclick="resetSystem()" class="nav-link" style="width:100%; margin-top:10px;">全データをリセット</button>
     </div>
 
+    <!-- モーダル（使い方は省略せず維持） -->
     <div id="modal-overlay" class="hidden">
         <div class="card" style="max-width: 320px; background: #1a202c;">
-            <h3 style="color: var(--teal); margin-top: 0; font-size: 1rem;">使い方・免責</h3>
-            <div style="font-size: 0.7rem; line-height: 1.5; color: #cbd5e0; margin-bottom: 15px;">
-                <b>【使い方】</b><br>
-                ・品目をタップ（連打可）。<br>
-                ・確定で資産と健康スコアを更新。<br><br>
-                <b>【免責】</b><br>
-                ・シミュレーションであり、結果を保証しません。<br>
-                ・年利5%の複利計算です。
-            </div>
-            <button class="primary" onclick="closeManual()">了解、未来へ</button>
+            <h3 style="color: var(--teal); margin-top: 0; font-size: 1rem;">使い方</h3>
+            <p style="font-size: 0.7rem; line-height: 1.5; color: #cbd5e0;">
+                ・「＋」で購入個数を増やし、「－」で減らせます。<br>
+                ・確定ボタンを押すまで、数値は反映されません。<br>
+                ・「リセット」は初期設定も含め全て消去されます。
+            </p>
+            <button class="primary" onclick="closeManual()">了解</button>
         </div>
     </div>
 
     <script>
-        let currentItems = [];
-        let userData = JSON.parse(localStorage.getItem('optimizer_v11'));
+        const MASTER_ITEMS = [
+            { cat: "🌾 主食", name: "自炊米・パスタ", p: 100, s: 3 },
+            { cat: "🌾 主食", name: "おにぎり(コンビニ)", p: 180, s: 1 },
+            { cat: "🌾 主食", name: "食パン", p: 150, s: 1 },
+            { cat: "🌾 主食", name: "総菜・菓子パン", p: 200, s: -3 },
+            { cat: "🥩 おかず(自炊)", name: "卵・納豆・豆腐", p: 200, s: 6 },
+            { cat: "🥩 おかず(自炊)", name: "季節の野菜", p: 300, s: 5 },
+            { cat: "🥩 おかず(自炊)", name: "肉・魚料理", p: 650, s: 8 },
+            { cat: "🥩 おかず(自炊)", name: "乳製品・ナッツ", p: 200, s: 4 },
+            { cat: "🏢 外部/嗜好", name: "コンビニ健康系", p: 400, s: 4 },
+            { cat: "🏢 外部/嗜好", name: "コンビニ弁当/麺", p: 850, s: -4 },
+            { cat: "🏢 外部/嗜好", name: "外食レストラン", p: 1500, s: 2 },
+            { cat: "🏢 外部/嗜好", name: "お酒・スナック", p: 500, s: -6 }
+        ];
+
+        let counts = {};
+        let userData = JSON.parse(localStorage.getItem('optimizer_v12'));
 
         window.onload = () => {
-            if (!userData) document.getElementById('setup-screen').classList.remove('hidden');
-            else { document.getElementById('main-screen').classList.remove('hidden'); updateDisplay(); }
+            if (!userData) {
+                document.getElementById('setup-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('main-screen').classList.remove('hidden');
+                renderList();
+                updateDisplay();
+            }
         };
+
+        function renderList() {
+            const list = document.getElementById('item-list');
+            let lastCat = "";
+            MASTER_ITEMS.forEach((item, index) => {
+                if (item.cat !== lastCat) {
+                    const label = document.createElement('div');
+                    label.className = 'cat-label';
+                    label.innerText = item.cat;
+                    list.appendChild(label);
+                    lastCat = item.cat;
+                }
+                counts[index] = 0;
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <div class="item-info">${item.name}</div>
+                    <div class="controls">
+                        <button class="btn-minus" onclick="changeCount(${index}, -1)">−</button>
+                        <span class="count-num" id="count-${index}">0</span>
+                        <button class="btn-plus" onclick="changeCount(${index}, 1)">+</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function changeCount(index, delta) {
+            counts[index] = Math.max(0, counts[index] + delta);
+            document.getElementById(`count-${index}`).innerText = counts[index];
+        }
 
         function saveSetup() {
             userData = {
@@ -114,49 +154,48 @@
                 fixedCost: (parseFloat(document.getElementById('init-fixed-cost').value) || 12) * 10000,
                 health: 60
             };
-            localStorage.setItem('optimizer_v11', JSON.stringify(userData));
+            localStorage.setItem('optimizer_v12', JSON.stringify(userData));
             location.reload();
         }
 
-        function countItem(el, p, s) {
-            el.classList.add('active');
-            let badge = el.querySelector('.count-badge') || document.createElement('div');
-            badge.className = 'count-badge';
-            badge.innerText = parseInt(badge.innerText || 0) + 1;
-            if (!el.querySelector('.count-badge')) el.appendChild(badge);
-            currentItems.push({ p, s });
-        }
-
         function commitInvestment() {
-            if (!currentItems.length) return;
-            const price = currentItems.reduce((a, b) => a + b.p, 0);
-            const score = currentItems.reduce((a, b) => a + b.s, 0);
+            let pTotal = 0, sTotal = 0, hasItems = false;
+            MASTER_ITEMS.forEach((item, i) => {
+                if (counts[i] > 0) {
+                    pTotal += item.p * counts[i];
+                    sTotal += item.s * counts[i];
+                    hasItems = true;
+                }
+            });
+            if (!hasItems) return;
+
             const daily = userData.maxFoodBudget / 30;
-            const futureVal = Math.max(0, daily - price) * Math.pow(1 + 0.05/12, 12 * 30);
+            const saved = Math.max(0, daily - pTotal);
+            const futureVal = saved * Math.pow(1 + 0.05/12, 12 * 30);
 
-            userData.savings -= price;
-            userData.foodBudget -= price;
-            userData.health = Math.max(0, Math.min(100, userData.health + score));
-            localStorage.setItem('optimizer_v11', JSON.stringify(userData));
-            updateDisplay();
-
-            document.getElementById('compounding-result').innerText = `¥${Math.floor(futureVal).toLocaleString()}`;
-            document.getElementById('log-display').innerText = `驚きました。${currentItems.length}件を計上。未来へ ¥${Math.floor(futureVal).toLocaleString()} の種を蒔きました。`;
+            userData.savings -= pTotal;
+            userData.foodBudget -= pTotal;
+            userData.health = Math.max(0, Math.min(100, userData.health + sTotal));
+            localStorage.setItem('optimizer_v12', JSON.stringify(userData));
             
-            currentItems = [];
-            document.querySelectorAll('.check-item').forEach(e => { e.classList.remove('active'); const b = e.querySelector('.count-badge'); if(b) b.remove(); });
+            updateDisplay();
+            document.getElementById('compounding-result').innerText = `¥${Math.floor(futureVal).toLocaleString()}`;
+            document.getElementById('log-display').innerText = `驚きました。見事なポートフォリオです。\n未来に ¥${Math.floor(futureVal).toLocaleString()} の種を蒔きました。`;
+            
+            // カウントリセット
+            for (let i in counts) { counts[i] = 0; document.getElementById(`count-${i}`).innerText = 0; }
         }
 
         function updateDisplay() {
             document.getElementById('health-score').innerText = userData.health;
             document.getElementById('food-budget-val').innerText = `¥${userData.foodBudget.toLocaleString()}`;
-            const dailyTotal = (userData.fixedCost + userData.maxFoodBudget) / 30;
-            document.getElementById('survival-days').innerText = Math.floor(userData.savings / dailyTotal);
+            const daily = (userData.fixedCost + userData.maxFoodBudget) / 30;
+            document.getElementById('survival-days').innerText = Math.floor(userData.savings / daily);
         }
 
         function openManual() { document.getElementById('modal-overlay').classList.remove('hidden'); }
         function closeManual() { document.getElementById('modal-overlay').classList.add('hidden'); }
-        function resetSystem() { if(confirm("全リセットしますか？")) { localStorage.removeItem('optimizer_v11'); location.reload(); } }
+        function resetSystem() { if(confirm("全リセットしますか？設定画面に戻ります。")) { localStorage.removeItem('optimizer_v12'); location.reload(); } }
     </script>
 </body>
 </html>
