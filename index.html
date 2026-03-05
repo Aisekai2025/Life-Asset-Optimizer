@@ -5,63 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life-Asset Optimizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net"></script>
     <style>
-        body { background: #1a202c; color: #e2e8f0; font-family: sans-serif; }
-        .card { background: #2d3748; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .score-glow { text-shadow: 0 0 15px #4fd1c5; }
-    </style>
+        body { background: #1a202c; color: #e2e8f0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .card { background: #2d3748; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #4a5568; }
+        .score-glow { text-shadow: 0 0 20px rgba(79, 209, 197, 0.6); }
+        .gradient-text { background: linear-gradient(90deg, #4fd1c5, #63b3ed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </script>
 </head>
-<body class="p-4 max-w-md mx-auto">
+<body class="p-4 max-w-md mx-auto pb-20">
 
-    <!-- 1. 感情の導入：執事の挨拶 -->
-    <header class="mb-8 mt-6">
-        <h1 id="greeting" class="text-2xl font-bold text-teal-400 mb-2">...</h1>
-        <p id="sub-message" class="text-sm text-gray-400 italic">ロード中...</p>
+    <!-- 1. 執事の挨拶 -->
+    <header class="mb-8 mt-10">
+        <h1 id="greeting" class="text-3xl font-bold gradient-text mb-2 tracking-tight">...</h1>
+        <p id="sub-message" class="text-gray-400 italic text-sm">解析中...</p>
     </header>
 
-    <!-- 2. 健康スコア：メインダッシュボード -->
-    <div class="card mb-6 text-center">
-        <h2 class="text-xs uppercase tracking-widest text-gray-500 mb-1">健康資産スコア</h2>
-        <div id="health-score" class="text-6xl font-bold text-teal-300 score-glow">85</div>
-        <p class="mt-2 text-sm">「守り」の状態：<span id="defense-status" class="text-green-400">強固</span></p>
+    <!-- 2. 健康スコア（身体資産） -->
+    <div class="card mb-6 overflow-hidden relative">
+        <div class="absolute top-0 right-0 p-4 opacity-10 text-4xl">♥</div>
+        <h2 class="text-xs uppercase tracking-widest text-gray-500 mb-1 font-semibold">現在の健康資産スコア</h2>
+        <div id="health-score" class="text-7xl font-bold text-teal-300 score-glow">85</div>
+        <p class="mt-3 text-sm text-gray-300">「守り」の状態：<span id="defense-status" class="text-green-400 font-bold">鉄壁</span></p>
     </div>
 
-    <!-- 3. 入力：擬似自動分類（レシート撮影の代わりにテキスト入力） -->
+    <!-- 3. 未来の安心グラフ（金融資産 × 生存力） -->
     <div class="card mb-6">
-        <h3 class="text-sm mb-3">今日の投資（購入品）</h3>
-        <input type="text" id="item-input" placeholder="例：鶏胸肉 ブロッコリー" class="w-full p-3 bg-gray-800 border border-gray-700 rounded mb-3 text-white">
-        <button onclick="analyzeItem()" class="w-full bg-teal-600 hover:bg-teal-500 p-3 rounded font-bold transition">解析して保存</button>
+        <h3 class="text-xs uppercase tracking-widest text-gray-500 mb-4 font-semibold">未来の安心：生存防衛ライン</h3>
+        <canvas id="futureChart" width="400" height="200"></canvas>
+        <p id="survival-days" class="mt-4 text-center text-sm font-medium text-blue-300">
+            現在の備えで、あと <span class="text-xl px-1">180</span> 日間戦えます
+        </p>
+    </div>
+
+    <!-- 4. 入力：投資ログ -->
+    <div class="card mb-6 bg-gray-800">
+        <h3 class="text-sm font-bold mb-3 text-teal-400">今日の自己投資（購入品）</h3>
+        <input type="text" id="item-input" placeholder="例：サバ缶 豆乳" class="w-full p-4 bg-gray-900 border border-gray-700 rounded-xl mb-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <button onclick="analyzeItem()" class="w-full bg-teal-600 hover:bg-teal-500 p-4 rounded-xl font-bold transition-all shadow-lg active:transform active:scale-95">
+            解析して未来を築く
+        </button>
     </div>
 
     <script>
-        // 執事のメッセージパターン
-        const greetings = ["やあ、いらっしゃい。", "おかえりなさい。", "お疲れ様。待っていたよ。"];
-        const subMessages = ["今日も君の戦いを見ていたよ。", "まずは深呼吸して、自分を労おう。", "ここが君のシェルターだ。"];
+        // 執事のメッセージ（心理士・保健師監修）
+        const greetings = ["やあ、いらっしゃい。", "おかえり。待ってたよ。", "今日も一日、お疲れ様。"];
+        const subMessages = [
+            "君の戦い、データにしっかり刻まれてるよ。",
+            "驚きました。君の「守り」、また一段と強固になったね。",
+            "今は鎧を脱いで、リラックスしていいんだ。"
+        ];
 
         window.onload = () => {
             document.getElementById('greeting').innerText = greetings[Math.floor(Math.random() * greetings.length)];
             document.getElementById('sub-message').innerText = subMessages[Math.floor(Math.random() * subMessages.length)];
+            initChart();
         };
 
-        // 簡易的な「自動分類＆健康スコア」ロジック
+        // 未来予測グラフの実装（Chart.js）
+        function initChart() {
+            const ctx = document.getElementById('futureChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['今月', '1ヶ月後', '2ヶ月後', '3ヶ月後', '4ヶ月後', '5ヶ月後'],
+                    datasets: [{
+                        label: '生存防衛キャッシュ(推計)',
+                        data: [100, 105, 112, 125, 140, 160], // 複利と節約効果のイメージ
+                        borderColor: '#4fd1c5',
+                        backgroundColor: 'rgba(79, 209, 197, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { color: '#718096' } }
+                    }
+                }
+            });
+        }
+
         function analyzeItem() {
             const input = document.getElementById('item-input').value;
             if(!input) return;
 
-            // 管理栄養士的・簡易キーワード判定
-            const healthyKeywords = ["鶏", "肉", "野菜", "魚", "卵", "ブロッコリー", "納豆"];
-            const debtKeywords = ["酒", "菓子", "パン", "揚げ物", "ラーメン"];
+            const healthyKeywords = ["鶏", "魚", "野菜", "サバ", "豆乳", "卵", "納豆"];
+            const debtKeywords = ["酒", "菓子", "パン", "ラーメン"];
 
-            let feedback = "";
             if (healthyKeywords.some(k => input.includes(k))) {
-                feedback = "驚きました。期待以上の成果です。身体資本への見事な増資ですね！";
+                alert("驚きました。期待以上の成果です。\nそれは『消費』ではなく、未来の君への『投資』ですね。");
             } else if (debtKeywords.some(k => input.includes(k))) {
-                feedback = "今は回復が必要な時期だね。この支出は『緊急メンテナンス』として処理しておこう。";
+                alert("今は回復が必要な時期だね。OK、これは『緊急メンテナンス費』として計上しておこう。自分を責めちゃダメだよ。");
             } else {
-                feedback = "なるほど、それも今の君には必要なピースかもしれないね。";
+                alert("なるほど、それも今の君には必要なピースかもしれないね。大切に使おう。");
             }
-
-            alert(feedback); // 本来はオシャレなモーダルやメッセージエリアへ
             document.getElementById('item-input').value = "";
         }
     </script>
