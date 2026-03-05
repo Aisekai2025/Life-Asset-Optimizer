@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Life-Asset Optimizer v22</title>
+    <title>Life-Asset Optimizer v23</title>
     <style>
         :root { --teal: #4fd1c5; --bg: #1a202c; --card: #2d3748; --gold: #f6e05e; --blue: #63b3ed; }
         body { background: var(--bg); color: #e2e8f0; font-family: sans-serif; margin: 0; padding: 5px; display: flex; flex-direction: column; align-items: center; height: 100dvh; overflow: hidden; box-sizing: border-box; }
         .container { max-width: 400px; width: 100%; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
-        .card { background: var(--card); border-radius: 0.8rem; padding: 0.4rem; border: 1px solid #4a5568; }
+        .card { background: var(--card); border-radius: 0.8rem; padding: 0.5rem; border: 1px solid #4a5568; }
         .hidden { display: none !important; }
-        #log-display { border-left: 3px solid var(--teal); padding: 6px 10px; font-size: 0.8rem; background: rgba(79, 209, 197, 0.05); line-height: 1.4; min-height: 60px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 2px; }
+        #log-display { border-left: 4px solid var(--teal); padding: 8px 10px; font-size: 0.85rem; background: rgba(79, 209, 197, 0.05); line-height: 1.5; min-height: 70px; display: flex; align-items: center; margin-bottom: 2px; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; text-align: center; }
-        .stat-val { font-size: 1rem; font-weight: bold; }
+        .stat-val { font-size: 1.1rem; font-weight: bold; line-height: 1.2; }
         .stat-label { font-size: 0.55rem; color: #a0aec0; font-weight: bold; }
         .investment-card { border: 1px solid var(--gold); background: rgba(246, 224, 94, 0.05); text-align: center; padding: 0.3rem; margin-bottom: 2px; }
-        .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; overflow-y: auto; flex-shrink: 1; margin-bottom: 2px; }
-        .cat-label { grid-column: span 2; font-size: 0.55rem; font-weight: bold; padding: 2px 0; border-bottom: 1px solid #4a5568; color: var(--teal); }
+        .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; overflow-y: auto; flex-grow: 1; margin-bottom: 2px; }
+        .cat-label { grid-column: span 2; font-size: 0.65rem; font-weight: bold; padding: 2px 0; border-bottom: 1px solid #4a5568; color: var(--teal); }
         .item-card { background: #1a202c; border-radius: 6px; border: 1px solid #4a5568; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 44px; }
-        .item-name { font-size: 0.75rem; font-weight: bold; text-align: center; line-height: 1.1; margin-bottom: 2px; color: #fff; }
+        .item-name { font-size: 0.8rem; font-weight: bold; text-align: center; line-height: 1.1; margin-bottom: 2px; color: #fff; }
         .counter-ui { display: flex; align-items: center; gap: 10px; }
         .c-btn { width: 22px; height: 22px; border-radius: 4px; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .c-minus { background: #4a5568; color: white; opacity: 0.2; }
@@ -27,69 +27,69 @@
         .c-num { font-size: 0.9rem; font-weight: 800; min-width: 12px; }
         button.primary { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--teal); color: #1a202c; font-weight: 900; cursor: pointer; font-size: 1.1rem; }
         .nav-link { color: #718096; font-size: 0.65rem; text-decoration: underline; background: none; border: none; cursor: pointer; padding: 5px; }
-        .settle-btn { margin-top: 5px; font-size: 0.7rem; background: var(--gold); color: #1a202c; border-radius: 4px; border: none; padding: 4px 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <!-- A: 初期設定 -->
     <div id="setup-screen" class="container hidden">
         <div class="card" style="margin-top: 20px; padding: 1.2rem;">
-            <h2 style="color: var(--teal); font-size: 1.3rem; margin:0;">運用の開始</h2>
-            <p style="font-size: 0.7rem; color: #a0aec0;">あなたの資産と生存ラインを定義します。</p>
-            <label style="font-size:0.6rem;">全貯蓄(万)</label><input style="width:100%; padding:8px; margin-bottom:8px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:5px;" type="number" id="init-savings" value="100">
-            <label style="font-size:0.6rem;">月食費予算(円)</label><input style="width:100%; padding:8px; margin-bottom:8px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:5px;" type="number" id="init-food-budget" value="45000">
-            <label style="font-size:0.6rem;">固定費(万)</label><input style="width:100%; padding:8px; margin-bottom:8px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:5px;" type="number" id="init-fixed-cost" value="12">
-            <button class="primary" onclick="saveSetup()">システムを起動</button>
+            <h2 style="color: var(--teal); font-size: 1.3rem; margin:0;">ようこそ</h2>
+            <p style="font-size: 0.8rem; color: #a0aec0; margin-bottom:15px;">あなたの「未来の安心」をここから設計します。</p>
+            <label style="font-size:0.65rem; font-weight:bold;">全貯蓄(万円)</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-savings" value="100">
+            <label style="font-size:0.65rem; font-weight:bold;">一ヶ月の食費予算(円)</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-food-budget" value="45000">
+            <label style="font-size:0.65rem; font-weight:bold;">固定費(万円/月)</label><input style="width:100%; padding:10px; margin-bottom:10px; background:#1a202c; color:white; border:1px solid #4a5568; border-radius:8px;" type="number" id="init-fixed-cost" value="12">
+            <button class="primary" onclick="saveSetup()">運用の扉を開く</button>
         </div>
     </div>
 
+    <!-- B: メイン画面 -->
     <div id="main-screen" class="container hidden">
         <header style="display: flex; justify-content: space-between; align-items: center; padding: 2px 5px;">
             <div style="font-size: 0.85rem; font-weight: bold; color: var(--teal);">Life-Asset Optimizer</div>
-            <button onclick="showScreen('legal-screen')" class="nav-link">重要事項・免責</button>
+            <button onclick="showScreen('legal-screen')" class="nav-link">重要事項・免責事項</button>
         </header>
 
         <div id="log-display" class="card">
-            <div id="log-text">待っていたよ。君の今日の成果を教えてくれるかな？</div>
-            <div id="settle-area"></div>
+            待っていたよ。君の今日の投資判断を教えてくれるかな？
         </div>
 
         <div class="card stat-grid">
-            <div><div class="stat-label">健康</div><div id="health-score" class="stat-val" style="color:var(--teal);">--</div></div>
-            <div><div class="stat-label">食費残</div><div id="food-budget-val" class="stat-val" style="color:var(--gold);">--</div></div>
-            <div><div class="stat-label">生存日数</div><div id="survival-days" class="stat-val" style="color:var(--blue);">--</div></div>
+            <div><div class="stat-label">健康スコア</div><div id="health-score" class="stat-val" style="color:var(--teal);">--</div></div>
+            <div><div class="stat-label">今月の食費残</div><div id="food-budget-val" class="stat-val" style="color:var(--gold);">--</div></div>
+            <div><div class="stat-label">生存防衛日数</div><div id="survival-days" class="stat-val" style="color:var(--blue);">--</div></div>
         </div>
 
         <div class="card investment-card">
             <div id="compounding-result" style="font-size: 1.3rem; color: var(--gold); font-weight: 800;">¥ 0</div>
-            <div style="font-size: 0.5rem; color: #a0aec0;">今日の選択による30年後の期待価値</div>
+            <div style="font-size: 0.5rem; color: #a0aec0; font-weight: bold;">本日の節約が30年後に生む期待価値</div>
         </div>
 
         <div class="checklist" id="item-grid"></div>
 
-        <div style="margin-top: auto;">
-            <button class="primary" onclick="commitInvestment()">ログを確定させる</button>
+        <div style="margin-top: auto; padding: 2px 0;">
+            <button class="primary" id="commit-btn" onclick="commitInvestment()">未来を確定させる</button>
+            <div id="settle-btn-area" class="hidden" style="margin-top: 5px;">
+                <button class="primary" style="background:var(--gold);" onclick="transferToSavings()">今月の決算を行い、翌月へ</button>
+            </div>
             <div style="text-align: center; margin-top: 5px;">
-                <span id="total-assets-label" style="font-size: 0.6rem; color: #718096;">総資産: 0円</span><br>
-                <button onclick="resetSystem()" class="nav-link">データを全てリセット</button>
+                <span id="total-assets-label" style="font-size: 0.65rem; color: #718096; font-weight: bold;">総資産: --円</span><br>
+                <button onclick="resetSystem()" class="nav-link">全てのデータをリセットして最初からやり直す</button>
             </div>
         </div>
     </div>
 
+    <!-- C: 免責事項（丁寧版） -->
     <div id="legal-screen" class="container hidden" style="overflow-y:auto; padding:15px; background: var(--bg);">
-        <div class="card">
-            <h2 style="color:var(--teal); font-size:1.1rem; border-bottom:2px solid var(--teal);">免責事項</h2>
-            <div style="font-size:0.7rem; line-height:1.5; color:#cbd5e0; margin:10px 0;">
-                <p><b>1. 本アプリの設計思想について</b><br>
-                本アプリは、日々の選択を「消費」ではなく「未来への投資」として再定義し、自己効力感を高めることを目的としたシミュレーションツールです。</p>
-                <p><b>2. 資産運用の数値に関するご注意</b><br>
-                画面上の未来価値は、年利5.0%の複利に基づいた理論値であり、将来の運用成果を保証するものではありません。実際の投資にはリスクが伴います。</p>
-                <p><b>3. 健康管理とアドバイスについて</b><br>
-                健康スコアは一般的な栄養学の指標に基づく簡易的な評価です。体調に不安がある場合は必ず医師の診察を受けてください。</p>
-                <p><b>4. 免責事項</b><br>
-                本アプリの利用によって生じた損害について、開発者は一切の責任を負いかねます。ご自身の判断と責任においてご利用ください。</p>
+        <div class="card" style="padding: 1.2rem;">
+            <h2 style="color:var(--teal); font-size:1.2rem; border-bottom:2px solid var(--teal); padding-bottom:10px; margin-top:0;">重要事項および免責事項</h2>
+            <div style="font-size:0.8rem; line-height:1.7; color:#e2e8f0; margin-top:15px; text-align: justify;">
+                <p><b>1. 本アプリの設計思想について</b><br>本アプリは、日々の選択を「消費」ではなく「未来への投資」として再定義し、自己効力感を高めることを目的としたシミュレーションツールです。</p>
+                <p><b>2. 資産運用の数値に関するご注意</b><br>画面上の未来価値は、年利5.0%の複利に基づいた理論値であり、将来の運用成果を保証するものではありません。実際の投資にはリスクが伴います。</p>
+                <p><b>3. 健康管理とアドバイスについて</b><br>健康スコアは一般的な栄養学の指標に基づく簡易的な評価です。体調に不安がある場合は必ず医師の診察を受けてください。</p>
+                <p><b>4. 免責事項</b><br>本アプリの利用によって生じた損害について、開発者は一切の責任を負いかねます。ご自身の判断と責任においてご利用ください。</p>
             </div>
-            <button class="primary" onclick="showScreen('main-screen')">同意して戻る</button>
+            <button class="primary" onclick="showScreen('main-screen')" style="margin-top:20px;">同意して戻る</button>
         </div>
     </div>
 
@@ -105,14 +105,14 @@
             { cat: "🥩 おかず", name: "🥛 乳製品等", p: 200, s: 4 },
             { cat: "🥩 おかず", name: "🍌 バナナ・果物", p: 150, s: 4 },
             { cat: "🥩 おかず", name: "🍄 海藻・きのこ", p: 150, s: 5 },
-            { cat: "🏢 外部", name: "🥐 総菜・菓子パン", p: 200, s: -4 },
-            { cat: "🏢 外部", name: "🍱 コンビニ弁当", p: 850, s: -4 },
-            { cat: "🏢 外部", name: "🍽 外食・会食", p: 1800, s: 2 },
-            { cat: "🏢 外部", name: "🍺 お酒・菓子", p: 500, s: -6 }
+            { cat: "🏢 外部・嗜好", name: "🥐 総菜・菓子パン", p: 200, s: -4 },
+            { cat: "🏢 外部・嗜好", name: "🍱 コンビニ弁当", p: 850, s: -4 },
+            { cat: "🏢 外部・嗜好", name: "🍽 外食・会食", p: 1800, s: 2 },
+            { cat: "🏢 外部・嗜好", name: "🍺 お酒・菓子", p: 500, s: -6 }
         ];
 
         let counts = {};
-        let userData = JSON.parse(localStorage.getItem('optimizer_v22'));
+        let userData = JSON.parse(localStorage.getItem('optimizer_v23'));
 
         window.onload = () => { if (!userData) showScreen('setup-screen'); else { showScreen('main-screen'); renderGrid(); updateDisplay(); } };
 
@@ -141,7 +141,7 @@
 
         function saveSetup() {
             userData = { savings: (parseFloat(document.getElementById('init-savings').value)||100)*10000, foodBudget: parseInt(document.getElementById('init-food-budget').value)||45000, maxFoodBudget: parseInt(document.getElementById('init-food-budget').value)||45000, fixedCost: (parseFloat(document.getElementById('init-fixed-cost').value)||12)*10000, health: 60 };
-            localStorage.setItem('optimizer_v22', JSON.stringify(userData));
+            localStorage.setItem('optimizer_v23', JSON.stringify(userData));
             location.reload();
         }
 
@@ -152,10 +152,10 @@
             const daily = userData.maxFoodBudget / 30;
             const futureVal = Math.max(0, daily - pTotal) * Math.pow(1 + 0.05/12, 12 * 30);
             userData.savings -= pTotal; userData.foodBudget -= pTotal; userData.health = Math.max(0, Math.min(100, userData.health + sTotal));
-            localStorage.setItem('optimizer_v22', JSON.stringify(userData));
+            localStorage.setItem('optimizer_v23', JSON.stringify(userData));
             updateDisplay();
             document.getElementById('compounding-result').innerText = `¥${Math.floor(futureVal).toLocaleString()}`;
-            document.getElementById('log-text').innerText = sTotal > 0 ? "素晴らしい！投資成功です。" : "今は休息の時。自分を労りましょう。";
+            document.getElementById('log-display').innerText = sTotal > 0 ? "驚きました。見事な投資判断です。今の選択が将来の君を支えます。" : "今は休息の時。この判断を尊重します。";
             for(let i in counts){ counts[i]=0; document.getElementById(`n-${i}`).innerText=0; document.getElementById(`m-${i}`).classList.remove('active'); }
         }
 
@@ -166,25 +166,36 @@
             const totalDaily = (userData.fixedCost + userData.maxFoodBudget) / 30;
             document.getElementById('survival-days').innerText = Math.floor(userData.savings / totalDaily);
             
-            const settleArea = document.getElementById('settle-area');
-            if (userData.foodBudget > 0) {
-                settleArea.innerHTML = `<button class="settle-btn" onclick="transferToSavings()">予算 ¥${userData.foodBudget.toLocaleString()} を貯蓄に回す</button>`;
+            // 【決算ロジック】食費残高が「1日の予算以下」か「マイナス」になったら、月次更新（決算）を提案
+            const dailyBudget = userData.maxFoodBudget / 30;
+            if (userData.foodBudget <= dailyBudget) {
+                document.getElementById('settle-btn-area').classList.remove('hidden');
             } else {
-                settleArea.innerHTML = `<div style="font-size:0.6rem; color:#718096; margin-top:5px;">今月の予算は全て未来へ投資されました。</div>`;
+                document.getElementById('settle-btn-area').classList.add('hidden');
             }
         }
 
         function transferToSavings() {
-            if(confirm("余った食費を貯蓄に振替えます。よろしいですか？")) {
-                userData.savings += userData.foodBudget;
+            const msg = userData.foodBudget > 0 ? 
+                `今月の余剰金 ¥${userData.foodBudget.toLocaleString()} を貯蓄へ振替え、来月の予算を補充します。よろしいですか？` : 
+                `今月の予算を使い切りましたね。来月の予算を補充し、新たな戦いを始めましょう。`;
+            
+            if(confirm(msg)) {
+                // 1. 浮いた分を貯蓄に加算（マイナスの場合は貯蓄から補填済みなので加算なし）
+                if(userData.foodBudget > 0) userData.savings += userData.foodBudget;
+                // 2. 新しい月の予算を「補充」
                 userData.foodBudget = userData.maxFoodBudget;
-                localStorage.setItem('optimizer_v22', JSON.stringify(userData));
-                updateDisplay();
-                document.getElementById('log-text').innerText = "驚きました！見事な月次決算です。貯蓄が増え、生存日数が伸びましたよ。";
+                localStorage.setItem('optimizer_v23', JSON.stringify(userData));
+                location.reload();
             }
         }
 
-        function resetSystem() { if(confirm("全てのデータを消去し、初期化しますか？\n\nこれまでの積み上げを白紙に戻し、新たな気持ちでスタートする決断も、私は心から尊重いたします。")) { localStorage.removeItem('optimizer_v22'); location.reload(); } }
+        function resetSystem() { 
+            if(confirm("全てのデータを消去し、システムを初期化しますか？\n\n「これまでの歩みを白紙に戻し、新しい一歩を踏み出す」という決断も、私は心から尊重いたします。")) { 
+                localStorage.removeItem('optimizer_v23'); 
+                location.reload(); 
+            } 
+        }
     </script>
 </body>
 </html>
