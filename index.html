@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life-Asset Optimizer</title>
-    <!-- CSSを直接記述し、外部依存(Tailwind CDN)の警告を回避 -->
     <style>
         :root { --teal: #4fd1c5; --bg: #1a202c; --card: #2d3748; }
         body { background: var(--bg); color: #e2e8f0; font-family: sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 400px; width: 100%; }
         .card { background: var(--card); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #4a5568; }
-        .gradient-text { background: linear-gradient(90deg, #4fd1c5, #63b3ed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-bold: 700; }
-        .score { font-size: 4rem; color: var(--teal); font-weight: bold; text-align: center; margin: 10px 0; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #4a5568; background: #1a202c; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--teal); color: #1a202c; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        #survival-days { text-align: center; color: #63b3ed; font-size: 0.9rem; }
+        .gradient-text { background: linear-gradient(90deg, #4fd1c5, #63b3ed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-weight: bold; }
+        .score { font-size: 4rem; color: var(--teal); font-weight: bold; text-align: center; margin: 10px 0; text-shadow: 0 0 15px rgba(79,209,197,0.4); }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #4a5568; background: #1a202c; color: white; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--teal); color: #1a202c; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.98); opacity: 0.9; }
+        #log-display { min-height: 60px; color: #a0aec0; font-size: 0.9rem; line-height: 1.5; border-left: 3px solid var(--teal); padding-left: 15px; margin-top: 10px; }
+        svg { width: 100%; height: 120px; margin-top: 10px; }
+        polyline { fill: none; stroke: var(--teal); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
     </style>
-    <!-- Chart.jsをブラウザの保護機能に引っかかりにくい設定で読み込み -->
-    <script src="https://cdnjs.cloudflare.com" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <div class="container">
@@ -33,54 +33,48 @@
         </div>
 
         <div class="card">
-            <div style="font-size: 0.7rem; color: #718096; margin-bottom: 15px;">未来の安心：生存防衛ライン</div>
-            <canvas id="futureChart"></canvas>
-            <div id="survival-days">現在の備えで、あと <span style="font-size: 1.2rem; font-weight: bold;">180</span> 日間戦えます</div>
+            <div style="font-size: 0.7rem; color: #718096;">未来の安心：生存防衛ライン</div>
+            <!-- SVGによる自作グラフ（外部依存なし） -->
+            <svg viewBox="0 0 400 120">
+                <polyline points="0,100 80,90 160,70 240,60 320,40 400,20" />
+            </svg>
+            <div style="text-align: center; color: #63b3ed; font-size: 0.8rem; margin-top: 10px;">
+                現在の備えで、あと <span style="font-size: 1.2rem; font-weight: bold;">180</span> 日間戦えます
+            </div>
         </div>
 
         <div class="card">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--teal); margin-bottom: 10px;">今日の自己投資（購入品）</div>
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--teal); margin-bottom: 10px;">今日の自己投資ログ</div>
             <input type="text" id="item-input" placeholder="例：サバ缶 豆乳">
             <button onclick="analyzeItem()">解析して未来を築く</button>
+            <div id="log-display">ここに執事からのメッセージが表示されます。</div>
         </div>
     </div>
 
     <script>
         const greetings = ["やあ、いらっしゃい。", "おかえり。待ってたよ。", "お疲れ様。"];
-        const subMessages = ["君の戦い、データに刻まれてるよ。", "驚きました。期待以上の成果だ。", "今はここで、鎧を脱いでいい。"];
+        const subMessages = ["君の戦い、データに刻まれているよ。", "驚きました。期待以上の成果だ。", "今はここで、鎧を脱いでいい。"];
 
         window.onload = () => {
             document.getElementById('greeting').innerText = greetings[Math.floor(Math.random() * greetings.length)];
             document.getElementById('sub-message').innerText = subMessages[Math.floor(Math.random() * subMessages.length)];
-            initChart();
         };
-
-        function initChart() {
-            const ctx = document.getElementById('futureChart');
-            if (!ctx) return;
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['1月', '2月', '3月', '4月', '5月'],
-                    datasets: [{
-                        data: [100, 110, 105, 130, 150],
-                        borderColor: '#4fd1c5',
-                        backgroundColor: 'rgba(79, 209, 197, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: { y: { display: false }, x: { grid: { display: false } } }
-                }
-            });
-        }
 
         function analyzeItem() {
             const input = document.getElementById('item-input').value;
+            const display = document.getElementById('log-display');
             if(!input) return;
-            alert("驚きました。期待以上の成果です。\nその一歩が、未来の君を守る盾になります。");
+
+            const healthy = ["鶏", "魚", "野菜", "サバ", "豆乳", "卵", "納豆"];
+            const debt = ["酒", "菓子", "パン", "ラーメン"];
+
+            if (healthy.some(k => input.includes(k))) {
+                display.innerText = "驚きました。期待以上の成果です。その選択が、未来の君を守る鉄壁の盾になります。";
+            } else if (debt.some(k => input.includes(k))) {
+                display.innerText = "今は回復が必要な時期だね。これは『緊急メンテナンス費』として計上しておこう。自分を労って。";
+            } else {
+                display.innerText = "なるほど、それも今の君には必要なピースかもしれないね。大切にしよう。";
+            }
             document.getElementById('item-input').value = "";
         }
     </script>
