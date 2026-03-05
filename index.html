@@ -176,6 +176,33 @@
                 location.reload();
             }
         }
+        // updateDisplay関数の中に「月次決算」のロジックを追加
+function updateDisplay() {
+    document.getElementById('health-score').innerText = userData.health;
+    document.getElementById('food-budget-val').innerText = `¥${userData.foodBudget.toLocaleString()}`;
+    
+    const dailyTotal = (userData.fixedCost + userData.maxFoodBudget) / 30;
+    document.getElementById('survival-days').innerText = Math.floor(userData.savings / dailyTotal);
+    
+    // 【新機能】食費残高がプラスなら「貯蓄へ回す」提案をログに表示
+    if (userData.foodBudget > 0) {
+        document.getElementById('log-display').innerHTML += 
+            `<br><button onclick="transferToSavings()" style="margin-top:5px; font-size:0.6rem; background:var(--gold); color:#1a202c; border-radius:4px; border:none; padding:2px 8px; font-weight:bold; cursor:pointer;">
+            余った ¥${userData.foodBudget.toLocaleString()} を貯蓄へ回す（今月の決算）
+            </button>`;
+    }
+}
+
+// 予算を貯蓄に還流させる関数
+function transferToSavings() {
+    if(confirm("今月の余剰金を『未来の安心（貯蓄）』へ振り替えますか？\n食費予算はリセットされ、貯蓄が増加します。")) {
+        userData.savings += userData.foodBudget;
+        userData.foodBudget = userData.maxFoodBudget; // 予算を復活
+        localStorage.setItem('optimizer_v21', JSON.stringify(userData));
+        location.reload(); // 再描画
+    }
+}
+
     </script>
 </body>
 </html>
